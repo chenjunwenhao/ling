@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.faq.mapper.TrainDao">
+
+    <select id="getTrain" resultType="com.faq.entity.Train" parameterType="com.faq.entity.Train">
+        SELECT
+        bus_train.id,
+        bus_train.train_name AS trainName,
+        bus_train.train_user AS trainUser,
+        bus_train.train_content AS trainContent,
+        bus_train.train_place AS trainPlace,
+        bus_train.train_time AS trainTime,
+        bus_train.user_id AS userId,
+        bus_train.remark AS remark,
+        bus_train.del_flag AS delFlag
+        FROM
+        bus_train
+        WHERE
+        bus_train.del_flag = 0
+        <if test="trainName!=null">
+            AND
+            bus_train.`train_name` like '%${trainName}%'
+        </if>
+        <if test="trainTime!=null">
+            AND
+            bus_train.`train_time`  > now()
+        </if>
+        order by
+        id desc
+    </select>
+    <select id="getTrainById" resultType="com.faq.entity.Train" parameterType="com.faq.entity.Train">
+        SELECT
+        bus_train.id,
+        bus_train.train_name AS trainName,
+        bus_train.train_user AS trainUser,
+        bus_train.train_content AS trainContent,
+        bus_train.train_place AS trainPlace,
+        bus_train.train_time AS trainTime,
+        bus_train.user_id AS userId,
+        bus_train.remark AS remark,
+        bus_train.del_flag AS delFlag
+        FROM
+        bus_train
+        WHERE
+        bus_train.del_flag = 0
+        <if test="id!=null">
+            AND
+            bus_train.`id` = #{id}
+        </if>
+    </select>
+    <select id="getUserCountByTel" resultType="Integer" parameterType="com.faq.entity.User">
+        SELECT
+        count(id)
+        FROM
+        bus_user
+        WHERE
+        bus_user.del_flag =0
+        AND
+        bus_user.tel=#{tel}
+    </select>
+    <insert id="insertTrain" parameterType="com.faq.entity.Train">
+        INSERT INTO `faq`.`bus_train` (
+        `id`,
+        `train_name`,
+        `train_user`,
+        `train_content`,
+        `train_place`,
+        `train_time`,
+        `user_id`,
+        `remark`,
+        `del_flag` )
+        VALUES
+        (
+        #{id},
+        #{trainName},
+        #{trainUser},
+        #{trainContent},
+        #{trainPlace},
+        #{trainTime},
+        #{userId},
+        #{remark},
+        0
+        );
+
+    </insert>
+    <update id="updateTrain" parameterType="com.faq.entity.Train" >
+        UPDATE `faq`.`bus_train`
+        SET `train_name` = #{trainName},
+        `train_user` = #{trainUser},
+        `train_content` = #{trainContent},
+        `train_place` = #{trainPlace},
+        `train_time` = #{trainTime},
+        `user_id` = #{userId},
+        `remark` = #{remark},
+        `del_flag` = '0'
+        WHERE
+        `id` = #{id};
+    </update>
+    <update id="deleteTrain" parameterType="com.faq.entity.Train">
+        UPDATE `faq`.`bus_train`
+        SET `del_flag` = 1
+        WHERE
+        (`id` = #{id});
+    </update>
+</mapper>

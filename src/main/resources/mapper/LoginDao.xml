@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.faq.mapper.LoginDao">
+
+        <select id="getUser" resultType="com.faq.entity.User" parameterType="com.faq.entity.User">
+                SELECT
+                bus_user.id,
+                bus_user.`name`,
+                bus_user.pwd,
+                bus_user.tel,
+                bus_user.company_name as companyName,
+                uap.area_name as province,
+                uac.area_name as city,
+                bd.name as departmentName,
+                bus_user.departmentId,
+                bus_user.industry,
+                bus_user.login_ip as loginIp,
+                bus_user.registe_ip as registeIp,
+                <!--bus_user.registe_time as registeTime,
+                bus_user.login_time as loginTime,-->
+                bus_user.`status`,
+                bus_user.del_flag as delFlag
+                FROM
+                bus_user
+                LEFT JOIN think_areas uap ON uap.area_id = bus_user.province
+                LEFT JOIN think_areas uac ON uac.area_id = bus_user.city
+                LEFT JOIN bus_department bd ON bd.id = bus_user.departmentId
+                WHERE
+                bus_user.del_flag =0
+                <if test="status!=null">
+                        AND
+                        bus_user.`status` = #{status}
+                </if>
+                <if test="industry!=null">
+                        AND
+                        bus_user.`industry` = #{industry}
+                </if>
+                <if test="companyName!=null">
+                        AND
+                        bus_user.companyName like '%${companyName}%'
+                </if>
+                <if test="name!=null">
+                        AND
+                        bus_user.name like '%${name}%'
+                </if>
+                order by
+                id desc
+        </select>
+        <select id="getUserById" resultType="com.faq.entity.User" parameterType="com.faq.entity.User">
+                SELECT
+                bus_user.id,
+                bus_user.`name`,
+                bus_user.pwd,
+                bus_user.tel,
+                bus_user.company_name as companyName,
+                uap.area_name as province,
+                uac.area_name as city,
+                bd.name as departmentName,
+                bus_user.departmentId,
+                bus_user.industry,
+                bus_user.login_ip as loginIp,
+                bus_user.registe_ip as registeIp,
+               <!-- bus_user.registe_time as registeTime,
+                bus_user.login_time as loginTime,-->
+                bus_user.`status`,
+                bus_user.del_flag as delFlag
+                FROM
+                bus_user
+                LEFT JOIN think_areas uap ON uap.area_id = bus_user.province
+                LEFT JOIN think_areas uac ON uac.area_id = bus_user.city
+                LEFT JOIN bus_department bd ON bd.id = bus_user.departmentId
+                WHERE
+                bus_user.del_flag =0
+                <if test="id!=null">
+                AND
+                bus_user.id=#{id}
+                </if>
+                <if test="tel!=null">
+                        AND
+                        bus_user.tel = #{tel}
+                </if>
+                <if test="pwd!=null">
+                        AND
+                        bus_user.pwd = #{pwd}
+                </if>
+        </select>
+        <select id="getUserCountByTel" resultType="Integer" parameterType="com.faq.entity.User">
+                SELECT
+                count(id)
+                FROM
+                bus_user
+                WHERE
+                bus_user.del_flag =0
+                AND
+                bus_user.tel=#{tel}
+        </select>
+        <insert id="insertUser" parameterType="com.faq.entity.User">
+                INSERT INTO `faq`.`bus_user` (
+                `id`,
+                `name`,
+                `pwd`,
+                `tel`,
+                `company_name`,
+                `province`,
+                `city`,
+                `departmentId`,
+                `industry`,
+                `login_ip`,
+                `registe_ip`,
+                <!--`login_time`,-->
+                `status`,
+                `del_flag`
+                )
+                VALUES
+                (
+                #{id},
+                #{name},
+                #{pwd},
+                #{tel},
+                #{companyName},
+                #{province},
+                #{city},
+                #{departmentId},
+                #{industry},
+                #{loginIp},
+                #{registeIp},
+                <!--#{loginTime},-->
+                #{status},
+                0
+                );
+        </insert>
+        <update id="updateUser" parameterType="com.faq.entity.User" >
+                UPDATE `faq`.`bus_user`
+                SET `id` = #{id},
+                `name` = #{name},
+                `pwd` = #{pwd},
+                `tel` = #{tel},
+                `company_name` = #{companyName},
+                `province` = #{province},
+                `city` = #{city},
+                `departmentId` = #{departmentId},
+                `industry` = #{industry},
+                `login_ip` = #{loginIp},
+                `registe_ip` = #{registeIp},
+                <!--`registe_time` = #{registeTime},
+                `login_time` = #{loginTime},-->
+                `status` = #{status}
+                WHERE
+                (`id` = #{id});
+        </update>
+        <update id="updatePasswoed" parameterType="com.faq.entity.User" >
+                UPDATE `faq`.`bus_user`
+                SET
+                `pwd` = #{pwd}
+                WHERE
+                (`id` = #{id});
+        </update>
+        <update id="deleteUser" parameterType="com.faq.entity.User">
+                UPDATE `faq`.`bus_user`
+                SET `del_flag` = 1
+                WHERE
+                (`id` = #{id});
+        </update>
+</mapper>

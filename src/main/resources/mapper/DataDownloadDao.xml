@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.faq.mapper.DataDownloadDao">
+
+    <select id="getData" resultType="com.faq.entity.Data" parameterType="com.faq.entity.DataDownload">
+        SELECT
+        bus_data.data_id AS dataId,
+        bus_data.data_name as dataName,
+        bus_data.data_contact as dataContact,
+        bus_data.data_time as dataTime,
+        bus_data.data_file as dataFile,
+        bus_data.data_type as dataType,
+        bus_data.data_suffix as dataSuffix,
+        bus_data.create_time as createTime,
+        bus_data.create_by as createBy,
+        bus_data.update_time as updateTime,
+        bus_data.update_by as updateBy,
+        bus_data.remark as remark,
+        bus_data.del_flag as delFlag
+        FROM
+        bus_data
+        WHERE
+        bus_data.del_flag = 0
+        <if test="dataName!=null">
+            and bus_data.data_name like '%${dataName}%'
+        </if>
+        <if test="dataType!=null">
+            and bus_data.data_type = #{dataType}
+        </if>
+
+    </select>
+    <select id="getDataById" resultType="com.faq.entity.Data" parameterType="com.faq.entity.Data">
+        SELECT
+        bus_data.data_id AS dataId,
+        bus_data.data_name as dataName,
+        bus_data.data_contact as dataContact,
+        bus_data.data_time as dataTime,
+        bus_data.data_file as dataFile,
+        bus_data.data_type as dataType,
+        bus_data.data_suffix as dataSuffix,
+        bus_data.create_time as createTime,
+        bus_data.create_by as createBy,
+        bus_data.update_time as updateTime,
+        bus_data.update_by as updateBy,
+        bus_data.remark as remark,
+        bus_data.del_flag as delFlag
+        FROM
+        bus_data
+        WHERE
+        bus_data.del_flag = 0
+        AND
+        bus_data.data_id = #{dataId}
+    </select>
+    <select id="getDataDownloadRank" resultType="com.faq.entity.DataDownload">
+        SELECT
+        t.download_id as downloadId,
+        t.data_id as dataId,
+        COUNT(t.data_id) as downloadNum,
+        bd.data_name as dataName,
+        t.user_id as userId,
+        t.download_time as downloadTime,
+        t.download_ip as downloadIp,
+        t.create_time as createTime,
+        t.create_by as createBy,
+        t.update_time as updateTime,
+        t.update_by as updateBy,
+        t.remark as remark,
+        t.del_flag as delFlag
+        FROM
+        bus_data_download t
+        LEFT JOIN bus_data bd on t.data_id = bd.data_id
+        WHERE
+        t.del_flag = '0'
+        GROUP BY
+        dataId
+        ORDER BY
+        downloadNum desc
+    </select>
+    <insert id="insert" parameterType="com.faq.entity.Data">
+
+        INSERT INTO `faq`.`bus_data_download` (
+        `download_id`,
+        `data_id`,
+        `user_id`,
+        `download_time`,
+        `download_ip`,
+        `create_time`,
+        `create_by`,
+        `update_time`,
+        `update_by`,
+        `remark`,
+        `del_flag`
+        )
+        VALUES
+        (
+        #{downloadId},
+        #{dataId},
+        #{userId},
+        now(),
+        #{downloadIp},
+        now(),
+        #{createBy},
+        now(),
+        #{updateBy},
+        #{remark},
+        '0'
+        );
+    </insert>
+    <update id="update" parameterType="com.faq.entity.Data">
+        UPDATE `faq`.`bus_data`
+        SET `data_id` = #{dataId},
+        `data_name` = #{dataName},
+        `data_contact` = #{dataContact},
+        <!--`data_time` = #{dataTime},-->
+        `data_type` = #{dataType},
+        `data_file` = #{dataFile},
+        `data_suffix` = #{dataSuffix},
+        <!--`create_time` = #{createTime},-->
+        <!--`create_by` = #{createBy},-->
+        `update_time` = now(),
+        `update_by` = #{updateBy},
+        `remark` = #{remark},
+        `del_flag` = #{delFlag}
+        WHERE
+        (`data_id` = #{dataId});
+    </update>
+    <update id="delete" parameterType="com.faq.entity.Data">
+        UPDATE `faq`.`bus_data`
+        SET
+        `del_flag` = '1'
+        WHERE
+        (`data_id` = #{dataId});
+    </update>
+
+</mapper>

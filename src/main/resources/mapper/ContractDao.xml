@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.faq.mapper.ContractDao">
+
+    <select id="getContractList" resultType="com.faq.entity.Contract" parameterType="com.faq.entity.Contract">
+        SELECT
+        bus_contract.id AS id,
+        bus_contract.user_id AS userId,
+        bu.`name` as userName,
+        bu.tel as tel,
+        bu.industry,
+        bd.name AS departmentName,
+        bus_contract.age AS age,
+        bus_contract.work_years AS workYears,
+        bus_contract.id_card AS idCard,
+        bus_contract.join_date AS joinDate,
+        bus_contract.contract_term AS contractTerm,
+        bus_contract.salary,
+        bus_contract.post,
+        bus_contract.remark,
+        bus_contract.del_flag AS delFlag
+        FROM
+        bus_contract
+        LEFT JOIN bus_user bu ON bu.id = bus_contract.user_id  AND bu.del_flag = 0
+        LEFT JOIN bus_department bd ON bd.id = bu.departmentId
+        WHERE
+        bus_contract.del_flag = 0
+        <if test="userName!=null">
+            AND
+            bu.`name` like '%${userName}%'
+        </if>
+        order by
+        id desc
+    </select>
+    <select id="getContractByUserId" resultType="com.faq.entity.Contract" parameterType="com.faq.entity.Contract">
+        SELECT
+        bus_contract.id AS id,
+        bus_contract.user_id AS userId,
+        bu.`name` as userName,
+        bu.tel as tel,
+        bu.industry,
+        bus_contract.age AS age,
+        bus_contract.work_years AS workYears,
+        bus_contract.id_card AS idCard,
+        bus_contract.join_date AS joinDate,
+        bus_contract.contract_term AS contractTerm,
+        bus_contract.salary,
+        bus_contract.post,
+        bus_contract.remark,
+        bus_contract.del_flag AS delFlag
+        FROM
+        bus_contract
+        LEFT JOIN bus_user bu ON bu.id = bus_contract.user_id
+        WHERE
+        bus_contract.del_flag = 0
+        <if test="userId!=null">
+            AND
+            bus_contract.user_id = #{userId}
+        </if>
+        <if test="id!=null">
+            AND
+            bus_contract.`id` = #{id}
+        </if>
+    </select>
+    <select id="getUserCountByTel" resultType="Integer" parameterType="com.faq.entity.User">
+        SELECT
+        count(id)
+        FROM
+        bus_user
+        WHERE
+        bus_user.del_flag =0
+        AND
+        bus_user.tel=#{tel}
+    </select>
+    <insert id="insertContract" parameterType="com.faq.entity.Contract">
+        INSERT INTO `faq`.`bus_contract` (
+        `id`,
+        `user_id`,
+        `age`,
+        `work_years`,
+        `id_card`,
+        `join_date`,
+        `contract_term`,
+        `salary`,
+        `post`,
+        `remark`,
+        `del_flag` )
+        VALUES
+        ( #{id},
+        #{userId},
+        #{age},
+        #{workYears},
+        #{idCard},
+        #{joinDate},
+        #{contractTerm},
+        #{salary},
+        #{post},
+        #{remark},
+        '0' );
+
+    </insert>
+    <update id="updateUser" parameterType="com.faq.entity.User" >
+        UPDATE `faq`.`bus_user`
+        SET `id` = #{id},
+        `name` = #{name},
+        `pwd` = #{pwd},
+        `tel` = #{tel},
+        `company_name` = #{companyName},
+        `province` = #{province},
+        `city` = #{city},
+        `departmentId` = #{departmentId},
+        `industry` = #{industry},
+        `login_ip` = #{loginIp},
+        `registe_ip` = #{registeIp},
+        <!--`registe_time` = #{registeTime},
+        `login_time` = #{loginTime},-->
+        `status` = #{status}
+        WHERE
+        (`id` = #{id});
+    </update>
+    <update id="updatePasswoed" parameterType="com.faq.entity.User" >
+        UPDATE `faq`.`bus_user`
+        SET
+        `pwd` = #{pwd}
+        WHERE
+        (`id` = #{id});
+    </update>
+    <update id="deleteUser" parameterType="com.faq.entity.User">
+        UPDATE `faq`.`bus_user`
+        SET `del_flag` = 1
+        WHERE
+        (`id` = #{id});
+    </update>
+</mapper>

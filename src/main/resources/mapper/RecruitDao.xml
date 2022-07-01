@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.faq.mapper.RecruitDao">
+
+    <select id="getRecruit" resultType="com.faq.entity.Recruit" parameterType="com.faq.entity.Recruit">
+        SELECT
+        bus_recruit.id,
+        bus_recruit.recruit_name AS recruitName,
+        bus_recruit.recruit_time AS recruitTime,
+        bus_recruit.recruit_content AS recruitContent,
+        bus_recruit.del_flag AS delFlag
+        FROM
+        bus_recruit
+        WHERE
+        bus_recruit.del_flag = 0
+        <if test="recruitName!=null">
+            AND
+            bus_recruit.recruit_name like '%${recruitName}%'
+        </if>
+        order by
+        id desc
+    </select>
+    <select id="getRecruitById" resultType="com.faq.entity.Recruit" parameterType="com.faq.entity.Recruit">
+
+        SELECT
+        bus_recruit.id,
+        bus_recruit.recruit_name AS recruitName,
+        bus_recruit.recruit_time AS recruitTime,
+        bus_recruit.recruit_content AS recruitContent,
+        bus_recruit.del_flag AS delFlag
+        FROM
+        bus_recruit
+        WHERE
+        bus_recruit.del_flag = 0
+        <if test="id!=null">
+            AND
+            bus_recruit.`id` = #{id}
+        </if>
+    </select>
+    <insert id="insertRecruit" parameterType="com.faq.entity.Recruit">
+        INSERT INTO `faq`.`bus_recruit` (
+        `id`,
+        `recruit_name`,
+        `recruit_time`,
+        `recruit_content`,
+        `del_flag`
+        )
+        VALUES
+        (
+        #{id},
+        #{recruitName},
+        #{recruitTime},
+        #{recruitContent},
+        '0' );
+
+    </insert>
+    <update id="updateRecruit" parameterType="com.faq.entity.Recruit" >
+        UPDATE `faq`.`bus_recruit`
+        SET `recruit_name` = #{recruitName},
+        `recruit_time` = #{recruitTime},
+        `recruit_content` = #{recruitContent},
+        `del_flag` = '0'
+        WHERE
+        `id` = #{id};
+    </update>
+    <update id="deleteRecruit" parameterType="com.faq.entity.Train">
+        UPDATE `faq`.`bus_recruit`
+        SET `del_flag` = 1
+        WHERE
+        (`id` = #{id});
+    </update>
+</mapper>

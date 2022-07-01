@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.faq.mapper.VideoDao">
+
+        <select id="getVideo" resultType="com.faq.entity.Video" parameterType="com.faq.entity.Video">
+                SELECT
+                bus_video.video_id as videoId,
+                bus_video.video_name as videoName,
+                bus_video.video_contact as videoContact,
+                bus_video.video_file as videoFile,
+                bus_video.video_img as videoImg,
+                bus_video.video_type as videoType,
+                bus_video.video_time as videoTime,
+                bus_video.create_time as createTime,
+                bus_video.create_by as createBy,
+                bus_video.update_time as updateTime,
+                bus_video.update_by as updateBy,
+                bus_video.remark as remark,
+                bus_video.del_flag as delFlag
+                FROM
+                bus_video
+                WHERE
+                bus_video.del_flag =0
+                <if test="videoName!=null">
+                        and bus_video.video_name like '%${videoName}%'
+                </if>
+                <if test="videoType!=null and videoType!=''">
+                        and bus_video.video_type = #{videoType}
+                </if>
+        </select>
+        <select id="getVideoById" resultType="com.faq.entity.Video" parameterType="com.faq.entity.Video">
+                SELECT
+                bus_video.video_id as videoId,
+                bus_video.video_name as videoName,
+                bus_video.video_contact as videoContact,
+                bus_video.video_file as videoFile,
+                bus_video.video_img as videoImg,
+                bus_video.video_type as videoType,
+                bus_video.video_time as videoTime,
+                bus_video.create_time as createTime,
+                bus_video.create_by as createBy,
+                bus_video.update_time as updateTime,
+                bus_video.update_by as updateBy,
+                bus_video.remark as remark,
+                bus_video.del_flag as delFlag
+                FROM
+                bus_video
+                WHERE
+                bus_video.del_flag =0
+                <if test="videoId!=null">
+                AND
+                        bus_video.video_id=#{videoId}
+                </if>
+        </select>
+        <insert id="insertVideo" parameterType="com.faq.entity.Video">
+                INSERT INTO `faq`.`bus_video` (
+                `video_id`,
+                `video_name`,
+                `video_contact`,
+                `video_file`,
+                `video_img`,
+                `video_type`,
+                `video_time`,
+                `create_time`,
+                `create_by`,
+                `update_time`,
+                `update_by`,
+                `remark`,
+                `del_flag`
+                )
+                VALUES
+                (
+                #{videoId},
+                #{videoName},
+                #{videoContact},
+                #{videoFile},
+                #{videoImg},
+                #{videoType},
+                #{videoTime},
+                now(),
+                #{createBy},
+                #{updateTime},
+                #{updateBy},
+                #{remark},
+                '0'
+                );
+        </insert>
+        <update id="updateVideo" parameterType="com.faq.entity.Video" >
+                UPDATE `faq`.`bus_video`
+                SET `video_id` = #{videoId},
+                `video_name` = #{videoName},
+                `video_contact` = #{videoContact},
+                `video_file` = #{videoFile},
+                `video_img` = #{videoImg},
+                `video_type` = #{videoType},
+                `video_time` = #{videoTime},
+                `update_time` = now(),
+                `update_by` = #{updateBy},
+                `remark` = #{remark}
+                WHERE
+                (`video_id` = #{videoId});
+        </update>
+        <update id="deleteVideo" parameterType="com.faq.entity.Video">
+                UPDATE `faq`.`bus_video`
+                SET `del_flag` = 1
+                WHERE
+                (`video_id` = #{videoId});
+        </update>
+</mapper>
